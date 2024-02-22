@@ -22,7 +22,7 @@ class UsersController {
   }
 
   async update(request, response) {
-    const { name, email, password, newPassword } = request.body
+    const { name, email, password, new_password } = request.body
     const user_id = request.user.id
 
     const database = await sqliteConnection()
@@ -41,18 +41,18 @@ class UsersController {
     user.name  = name ?? user.name
     user.email = email ?? user.email
 
-    if(newPassword && !password) {
+    if(new_password && !password) {
       throw new AppError('You need to enter your current password to change your password')
     }
 
-    if(newPassword && password) {
+    if(new_password && password) {
       const checkPassword = await compare(password, user.password)
 
       if(!checkPassword) {
         throw new AppError('Your current password is wrong')
       }
 
-      user.password = await hash(newPassword, 8)
+      user.password = await hash(new_password, 8)
     }
 
     await database.run(`
